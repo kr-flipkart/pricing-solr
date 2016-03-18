@@ -1,0 +1,40 @@
+#!/bin/bash -e
+
+if [ "$#" -lt 4 ]; then
+	echo "Usage Direction:"
+	echo "There should be a minimum of 4 parameters. 1->BaseDirectory 2->PackageName 3->PackageBuildVersion 4->SolrServerVersion"
+	exit 1
+fi
+
+if ! [ -e "$1" ]; then
+	echo "$1 not found"
+	exit 1
+fi
+
+if ! [ -d "$1" ]; then
+	echo "$1 not a directory"
+	exit 1
+fi
+
+
+#Create copy of packge-common here
+
+BASE_DIR=$1
+SOLR_3P_PACKAGE_NAME=$2
+SOLR_3P_PACKAGE_BUILD_VERSION=$3
+SOLR_SERVER_VERSION=$4
+DEB_DIR=deb
+
+
+if [ -d "$DEB_DIR" ]; then
+	rm -rf "$DEB_DIR"
+fi
+
+
+mkdir "$DEB_DIR"
+cp -r ${BASE_DIR}/DEBIAN ${DEB_DIR}/DEBIAN
+cp -r ${BASE_DIR}/usr ${DEB_DIR}/usr
+
+tar -xzf "solr-${SOLR_SERVER_VERSION}.tgz" --directory ${DEB_DIR}/usr/share
+
+LC_CTYPE=C && LANG=C && find ${DEB_DIR} -type f | xargs sed -i '' -e "s/_VERSION_/${SOLR_SERVER_VERSION}/g" -e "s/_PACKAGE_/${SOLR_3P_PACKAGE_NAME}/g" -e "s/_BUILD_/${SOLR_3P_PACKAGE_BUILD_VERSION}/g"

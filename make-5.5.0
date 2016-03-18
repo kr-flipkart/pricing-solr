@@ -1,0 +1,16 @@
+#!/bin/bash -e
+
+wget "http://a.mbbsindia.com/lucene/solr/5.5.0/solr-5.5.0.tgz"
+
+SOLR_SERVER_VERSION=5.5.0
+PAC_NAME=fk-3p-solr-${SOLR_SERVER_VERSION}
+BUILD_VER=$(date +%Y%m%d-%H%M)
+BASE_DIR=package-common
+
+./make-deb $BASE_DIR $PAC_NAME $BUILD_VER $SOLR_SERVER_VERSION
+
+#Do customization here if rquired to the deb folder 
+
+./create-deb deb ${PAC_NAME}.deb
+
+rm -rf deb
